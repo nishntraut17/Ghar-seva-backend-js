@@ -141,8 +141,13 @@ export const updateUser = async (req, res) => {
         user.password = await bcrypt.hash(password, 10);
 
         await user.save();
+        const token = jwt.sign(
+            { _id: user._id, name: user.name, email: user.email, profileImage: user.profileImage, role: user.role, isVerified: user?.isVerified, mobile: user.mobile, city: user.city, address: user.address },
+            process.env.JWT_TOKEN,
+            { expiresIn: "2 days" }
+        );
 
-        res.status(201).send("User Updated");
+        res.status(201).send(token);
     } catch (error) {
         res.status(500).send(error.message);
     }
